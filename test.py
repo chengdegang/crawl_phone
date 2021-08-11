@@ -1,4 +1,6 @@
+import os
 import re
+import time
 
 import bs4
 import requests
@@ -62,20 +64,30 @@ def test():
     # print(name2)
     # print(len(name2))
 
-def get360():
+def get360(datas):
     soup = bs4.BeautifulSoup(open('data/result_detail.txt', 'r', encoding='utf-8'), 'html.parser')
     # 获取title
     title = soup.select('#readme > article > h1')
     title = ''.join(re.findall(r'</a>(.+?)</h1>', str(title)))
     print(title)
-    # readme > article > p:nth-child(30) > code
 
-    for sibling in soup.p.next_siblings:
-        print(sibling)
-    # readme > article > p:nth-child(6)
-    # readme > article > p:nth-child(55)
-    for i in range(5,55):
-        print(soup.select(f'#readme > article > p:nth-child({i})'))
+    # datas = []
+    #获取不到值，遍历p标签下的
+    # for sibling in soup.p.next_siblings:
+    #     # print(sibling)
+    #     datas.append(sibling)
+    print(len(datas))
+    if len(datas) < 1:
+        datas.append('append')
+        print(datas)
+    else:
+        print(datas)
+
+    #较笨的写法
+    # for i in range(5,55):
+    #     print(soup.select(f'#readme > article > p:nth-child({i})'))
+
+
 
 
 #测试数据异常的情况
@@ -98,7 +110,17 @@ def test2():
     soup = bs4.BeautifulSoup(open('data/result_detail.txt', 'r', encoding='utf-8'), 'html.parser')
     data1 = soup.select()
 
+def ospath():
+    log_path = os.path.dirname(os.path.abspath('.'))
+    path2 = os.getcwd()
+    t = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
+    print(log_path)
+    print(path2)
+    print(t)
+
+datas = [[]]
 # down()
 # test()
-get360()
+# get360(datas)
 # test3()
+ospath()

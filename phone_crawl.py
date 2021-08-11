@@ -68,12 +68,16 @@ def get_one_info(urls):
                 name1_detail1.append(temp)
         # print(name1_detail1)
         name1_detail1 = [x for x in name1_detail1 if x]
-        write_excel(file='data/Model summary.xlsx',data=name1_detail1,sheetname=title)
+        if len(name1_detail1) < 2:
+            name1_detail1.append(f'{title} 暂无获取到数据，请手动检查')
+        else:
+            name1_detail1 = name1_detail1
+        write_excel(file='Model_summary.xlsx',data=name1_detail1,sheetname=title)
 
 """
-输入的是一个以行为分隔的列表，若输入文件存在，则在该文件新建一个sheet存储数据，若不存在，则创建一个时间戳命名的xlsx文件
+在当前路径创建xlsx文件,若已存在会直接覆盖写入数据
 """
-def write_excel(file = '默认.xlsx',data = [['默认数据1'],['默认数据2']],sheetname = 'ces'):
+def write_excel(file = '默认.xlsx',data = [['默认数据3'],['默认数据5']],sheetname = 'ces'):
     if os.path.exists(file) == True:
         wb = openpyxl.load_workbook(file)
         # 默认写到第一个sheet中，index为0
@@ -87,14 +91,14 @@ def write_excel(file = '默认.xlsx',data = [['默认数据1'],['默认数据2']
         print('---写入完成---')
     else:
         wbc = Workbook()
-        log_path = os.path.dirname(os.path.abspath('.')) + '/testexcel/file/'
-        t = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        suffix = '.xlsx'  # 文件类型
-        newfile = t + suffix
-        path = log_path + t + suffix
+        log_path = os.getcwd() + '/'
+        # t = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
+        # suffix = '.xlsx'  # 文件类型
+        # newfile = file + suffix
+        path = log_path + file
         wbc.save(path)
-        print(f"输入路径不存在xlsx文件,创建文件 {log_path+newfile} ")
-        wb = openpyxl.load_workbook(log_path+newfile)
+        print(f"创建文件 {log_path + file} ")
+        wb = openpyxl.load_workbook(log_path + file)
         # 默认写到第一个sheet中，index为0
         wb.create_sheet(index=0, title=f'{sheetname}')
         sheet = wb[f'{sheetname}']
@@ -102,13 +106,31 @@ def write_excel(file = '默认.xlsx',data = [['默认数据1'],['默认数据2']
         for row_index, row_item in enumerate(data):
             for col_index, col_item in enumerate(row_item):
                 sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
-        wb.save(log_path+newfile)
+        wb.save(log_path + file)
         print('---写入完成---')
+        return log_path + file
+
+def send_msg_to_group():
+    url = 'https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=f4b5ffa6-8412-47ed-9c7d-b0c6b22167e8'   # debug
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "msgtype": "markdown",
+        "markdown": {
+            "content": 'hi , this is u need msg   <font color=\"warning\">请点击链接下载</font>\n'
+                       '[统计数据结果](http://10.244.12.21:8080/view/Tools/job/crawl_phone/ws/Model_summary.xlsx)'
+
+        }
+    }
+    r = requests.post(url, headers=headers, json=data)
+    print(r.content)
 
 urls = ['/KHwang9883/MobileModels/blob/master/brands/apple.md']
 if __name__ == '__main__':
     1
+    # write_excel(file='测试表格2.xlsx',data=[['默认数据8'],['默认数据6']],sheetname='ccc')
+
     #运行代码
-    get_one_info(get_phonesinfo())
+    # get_one_info(get_phonesinfo())
+    # send_msg_to_group()
     print('运行完成')
 
